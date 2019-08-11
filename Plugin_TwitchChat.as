@@ -16,11 +16,14 @@ string Setting_TwitchChannel;
 [Setting name="Enable chat overlay"]
 bool Setting_ChatOverlay = true;
 
-[Setting name="Enable chat overlay message timer"]
-bool Setting_ChatOverlayMessageTimer = true;
-
-[Setting name="Message width"]
+[Setting name="Message width" min="100" max="1920"]
 int Setting_ChatMessageWidth = 400;
+
+[Setting name="Chat position X" min="0" max="1"]
+float Setting_ChatPosX = 0.5f;
+
+[Setting name="Chat position Y" min="0" max="1"]
+float Setting_ChatPosY = 0.3f;
 
 [Setting name="Flip message order"]
 bool Setting_ChatFlipMessageOrder = false;
@@ -36,6 +39,9 @@ int Setting_ChatMessageBitsTime = 25000;
 
 [Setting name="Message subscription time"]
 int Setting_ChatMessageSubscriptionTime = 30000;
+
+[Setting name="Enable chat overlay message timer"]
+bool Setting_ChatOverlayMessageTimer = true;
 
 [Setting name="Enable !map command"]
 bool Setting_MapCommand = true;
@@ -267,8 +273,8 @@ void Render()
 
 	int width = Setting_ChatMessageWidth;
 
-	int x = screenWidth / 2 - width / 2;
-	int y = 200;
+	int x = int(screenWidth * Setting_ChatPosX) - width / 2;
+	int y = int(screenHeight * Setting_ChatPosY);
 
 	const int boxPadding = 4;
 	const int linePadding = 4;
