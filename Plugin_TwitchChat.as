@@ -4,58 +4,58 @@
 
 #include "TwitchChat.as"
 
-[Setting name="Twitch OAuth Token" password]
+[Setting category="Twitch" name="Twitch OAuth Token" password]
 string Setting_TwitchToken;
 
-[Setting name="Twitch Nickname" description="Lowercase username of the account to connect."]
+[Setting category="Twitch" name="Twitch Nickname" description="Lowercase username of the account to connect."]
 string Setting_TwitchNickname;
 
-[Setting name="Twitch Channel" description="Lowercase and including the # sign, for example: #missterious"]
+[Setting category="Twitch" name="Twitch Channel" description="Lowercase and including the # sign, for example: #missterious"]
 string Setting_TwitchChannel;
 
-[Setting name="Enable chat overlay"]
+[Setting category="Overlay" name="Enable chat overlay"]
 bool Setting_ChatOverlay = true;
 
-[Setting name="Message width" min="100" max="1920"]
+[Setting category="Overlay" name="Message width" min="100" max="1920"]
 int Setting_ChatMessageWidth = 400;
 
-[Setting name="Chat position X" min="0" max="1"]
+[Setting category="Overlay" name="Chat position X" min="0" max="1"]
 float Setting_ChatPosX = 0.5f;
 
-[Setting name="Chat position Y" min="0" max="1"]
+[Setting category="Overlay" name="Chat position Y" min="0" max="1"]
 float Setting_ChatPosY = 0.3f;
 
-[Setting name="Flip message order"]
+[Setting category="Overlay" name="Flip message order"]
 bool Setting_ChatFlipMessageOrder = false;
 
-[Setting name="Messages disappear after a given time"]
+[Setting category="Overlay" name="Messages disappear after a given time"]
 bool Setting_MessageTimeToLive = true;
 
-[Setting name="Maximum number of messages"]
+[Setting category="Overlay" name="Maximum number of messages"]
 int Setting_MessageCountLimit = 20;
 
-[Setting name="Message time"]
+[Setting category="Overlay" name="Message time"]
 int Setting_ChatMessageTime = 10000;
 
-[Setting name="Message bits threshold"]
+[Setting category="Overlay" name="Message bits threshold"]
 int Setting_ChatMessageBitsThreshold = 100;
 
-[Setting name="Message bits time"]
+[Setting category="Overlay" name="Message bits time"]
 int Setting_ChatMessageBitsTime = 25000;
 
-[Setting name="Message subscription time"]
+[Setting category="Overlay" name="Message subscription time"]
 int Setting_ChatMessageSubscriptionTime = 30000;
 
-[Setting name="Enable chat overlay message timer"]
+[Setting category="Overlay" name="Enable chat overlay message timer"]
 bool Setting_ChatOverlayMessageTimer = true;
 
-[Setting name="Enable !map command"]
+[Setting category="Commands" name="Enable !map command"]
 bool Setting_MapCommand = true;
 
-[Setting name="Enable !server command"]
+[Setting category="Commands" name="Enable !server command"]
 bool Setting_ServerCommand = true;
 
-[Setting name="Enable !join command"]
+[Setting category="Commands" name="Enable !join command"]
 bool Setting_JoinCommand = true;
 
 CTrackMania@ g_app;
@@ -329,8 +329,6 @@ void Render()
 
 void RenderSettings()
 {
-	UI::Separator();
-
 	UI::Text("Test:");
 
 	if (UI::Button("Chat")) {
