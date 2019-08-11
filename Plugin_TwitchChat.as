@@ -22,6 +22,9 @@ bool Setting_ChatOverlayMessageTimer = true;
 [Setting name="Message width"]
 int Setting_ChatMessageWidth = 400;
 
+[Setting name="Flip message order"]
+bool Setting_ChatFlipMessageOrder = false;
+
 [Setting name="Message time"]
 int Setting_ChatMessageTime = 10000;
 
@@ -270,7 +273,7 @@ void Render()
 	const int boxPadding = 4;
 	const int linePadding = 4;
 
-	for (uint i = 0; i < g_chatMessages.Length; i++) {
+	for (int i = int(g_chatMessages.Length) - 1; i >= 0; i--) {
 		auto msg = g_chatMessages[i];
 
 		vec4 textColor = msg.m_textColor;
@@ -296,7 +299,12 @@ void Render()
 		Draw::DrawString(vec2(x + boxPadding, y + boxPadding), msg.m_color, msg.m_username);
 		Draw::DrawString(vec2(x + boxPadding + textSizeUsername.x + boxPadding, y + boxPadding), textColor, msg.m_text, null, 0.0f, maxMessageWidth);
 
-		y += int(textSizeMessage.y) + boxPadding * 2 + linePadding;
+		int yDelta = int(textSizeMessage.y) + boxPadding * 2 + linePadding;
+		if (Setting_ChatFlipMessageOrder) {
+			y += yDelta;
+		} else {
+			y -= yDelta;
+		}
 	}
 }
 
@@ -332,10 +340,4 @@ float easeQuad(float x)
 {
 	if ((x /= 0.5) < 1) return 0.5 * x * x;
 	return -0.5 * ((--x) * (x - 2) - 1);
-}
-
-float easeCubic(float x)
-{
-	if ((x /= 0.5) < 1) return 0.5 * x * x * x;
-	return 0.5 * ((x -= 2) * x * x + 2);
 }
