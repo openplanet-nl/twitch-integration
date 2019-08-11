@@ -19,6 +19,9 @@ bool Setting_ChatOverlay = true;
 [Setting name="Enable chat overlay message timer"]
 bool Setting_ChatOverlayMessageTimer = true;
 
+[Setting name="Message width"]
+int Setting_ChatMessageWidth = 400;
+
 [Setting name="Message time"]
 int Setting_ChatMessageTime = 10000;
 
@@ -259,8 +262,7 @@ void Render()
 	int screenWidth = Draw::GetWidth();
 	int screenHeight = Draw::GetHeight();
 
-	int width = 400;
-	int height = 200;
+	int width = Setting_ChatMessageWidth;
 
 	int x = screenWidth / 2 - width / 2;
 	int y = 200;
@@ -272,8 +274,6 @@ void Render()
 		auto msg = g_chatMessages[i];
 
 		vec4 textColor = msg.m_textColor;
-		vec4 fillColor = msg.m_color;
-		fillColor.w = 0.1f;
 
 		vec2 textSizeUsername = Draw::MeasureString(msg.m_username);
 
@@ -282,8 +282,15 @@ void Render()
 
 		Draw::FillRect(vec4(x, y, width, textSizeMessage.y + boxPadding * 2), vec4(0, 0, 0, 0.9f), 4.0f);
 
-		if (Setting_ChatOverlayMessageTimer && msg.TimeFactor < 0.9f) {
-			Draw::FillRect(vec4(x, y, width * easeCubic(1.0f - msg.TimeFactor), textSizeMessage.y + boxPadding * 2), fillColor, 4.0f);
+		if (Setting_ChatOverlayMessageTimer) {
+			vec4 fillColor = msg.m_color;
+			fillColor.w = 0.3f;
+			Draw::FillRect(vec4(
+				x + boxPadding,
+				y + textSizeMessage.y + boxPadding * 1.5f,
+				(width - boxPadding * 2) * easeQuad(1.0f - msg.TimeFactor),
+				boxPadding / 2
+			), fillColor);
 		}
 
 		Draw::DrawString(vec2(x + boxPadding, y + boxPadding), msg.m_color, msg.m_username);
@@ -319,6 +326,12 @@ void RenderSettings()
 		newMessage.m_username = "Miss";
 		newMessage.m_color = vec4(1, 0.2f, 0.6f, 1);
 	}
+}
+
+float easeQuad(float x)
+{
+	if ((x /= 0.5) < 1) return 0.5 * x * x;
+	return -0.5 * ((--x) * (x - 2) - 1);
 }
 
 float easeCubic(float x)
