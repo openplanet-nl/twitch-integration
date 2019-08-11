@@ -331,14 +331,18 @@ void RenderSettings()
 {
 	UI::Separator();
 
-	if (UI::Button("Show test message")) {
+	UI::Text("Test:");
+
+	if (UI::Button("Chat")) {
 		auto newMessage = AddChatMessage(MessageType::Chat);
 		newMessage.m_text = "This is a test message!";
 		newMessage.m_username = "Miss";
 		newMessage.m_color = vec4(1, 0.2f, 0.6f, 1);
 	}
 
-	if (UI::Button("Show test message with bits")) {
+	UI::SameLine();
+
+	if (UI::Button("Bits")) {
 		auto newMessage = AddChatMessage(MessageType::Chat);
 		newMessage.m_bits = 2500;
 		newMessage.m_textColor = vec4(1, 1, 0, 1);
@@ -347,11 +351,17 @@ void RenderSettings()
 		newMessage.m_color = vec4(1, 0.2f, 0.6f, 1);
 	}
 
-	if (UI::Button("Show test subscription")) {
+	UI::SameLine();
+
+	if (UI::Button("Subscription")) {
 		auto newMessage = AddChatMessage(MessageType::Subscription);
 		newMessage.m_text = "subscribed!";
 		newMessage.m_username = "Miss";
 		newMessage.m_color = vec4(1, 0.2f, 0.6f, 1);
+	}
+
+	if (UI::Button("Clear messages")) {
+		g_chatMessages.RemoveRange(0, g_chatMessages.Length);
 	}
 }
 
