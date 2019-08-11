@@ -7,7 +7,7 @@
 [Setting name="Twitch OAuth Token" password]
 string Setting_TwitchToken;
 
-[Setting name="Twitch Nickname" description="Lowercase."]
+[Setting name="Twitch Nickname" description="Lowercase username of the account to connect."]
 string Setting_TwitchNickname;
 
 [Setting name="Twitch Channel" description="Lowercase and including the # sign, for example: #missterious"]
@@ -72,6 +72,32 @@ class ChatMessage
 
 array<ChatMessage@> g_chatMessages;
 
+enum MessageType
+{
+	Chat,
+	Subscription
+}
+
+ChatMessage@ AddChatMessage(MessageType type)
+{
+	auto newMessage = ChatMessage();
+	newMessage.m_startTime = Time::Now;
+
+	switch (type) {
+		case MessageType::Chat:
+			newMessage.m_ttl = Setting_ChatMessageTime;
+			break;
+
+		case MessageType::Subscription:
+			newMessage.m_ttl = Setting_ChatMessageSubscriptionTime;
+			newMessage.m_textColor = vec4(1, 0.3f, 1, 1);
+			break;
+	}
+
+	g_chatMessages.InsertLast(newMessage);
+	return newMessage;
+}
+
 CGameCtnChallenge@ GetCurrentMap()
 {
 #if MP41
@@ -123,9 +149,7 @@ class ChatCallbacks : Twitch::ICallbacks
 
 	void OnMessage(IRC::Message@ msg)
 	{
-		auto newMessage = ChatMessage();
-		newMessage.m_startTime = Time::Now;
-		newMessage.m_ttl = Setting_ChatMessageTime;
+		auto newMessage = AddChatMessage(MessageType::Chat);
 
 		newMessage.m_text = msg.m_params[1];
 
@@ -151,8 +175,6 @@ class ChatCallbacks : Twitch::ICallbacks
 			HandleCommand(newMessage);
 		}
 
-		g_chatMessages.InsertLast(newMessage);
-
 		print("Twitch chat: " + newMessage.m_username + ": " + newMessage.m_text);
 	}
 
@@ -164,9 +186,7 @@ class ChatCallbacks : Twitch::ICallbacks
 		}
 
 		if (noticeType == "sub" || noticeType == "resub" || noticeType == "subgift" || noticeType == "anonsubgift") {
-			auto newMessage = ChatMessage();
-			newMessage.m_startTime = Time::Now;
-			newMessage.m_ttl = Setting_ChatMessageSubscriptionTime;
+			auto newMessage = AddChatMessage(MessageType::Subscription);
 
 			msg.m_tags.Get("message", newMessage.m_text);
 			if (newMessage.m_text == "") {
@@ -178,12 +198,6 @@ class ChatCallbacks : Twitch::ICallbacks
 			string color;
 			msg.m_tags.Get("color", color);
 			newMessage.m_color = Text::ParseHexColor(color);
-			if (newMessage.m_color.w == 0.0f) {
-				newMessage.m_color.w = 1.0f;
-			}
-			newMessage.m_textColor = vec4(1, 0.3f, 1, 1);
-
-			g_chatMessages.InsertLast(newMessage);
 
 			print("New Twitch subscription from " + newMessage.m_username + "!");
 		}
@@ -276,6 +290,34 @@ void Render()
 		Draw::DrawString(vec2(x + boxPadding + textSizeUsername.x + boxPadding, y + boxPadding), textColor, msg.m_text, null, 0.0f, maxMessageWidth);
 
 		y += int(textSizeMessage.y) + boxPadding * 2 + linePadding;
+	}
+}
+
+void RenderSettings()
+{
+	UI::Separator();
+
+	if (UI::Button("Show test message")) {
+		auto newMessage = AddChatMessage(MessageType::Chat);
+		newMessage.m_text = "This is a test message!";
+		newMessage.m_username = "Miss";
+		newMessage.m_color = vec4(1, 0.2f, 0.6f, 1);
+	}
+
+	if (UI::Button("Show test message with bits")) {
+		auto newMessage = AddChatMessage(MessageType::Chat);
+		newMessage.m_bits = 2500;
+		newMessage.m_textColor = vec4(1, 1, 0, 1);
+		newMessage.m_text = "Have some bits!";
+		newMessage.m_username = "Miss";
+		newMessage.m_color = vec4(1, 0.2f, 0.6f, 1);
+	}
+
+	if (UI::Button("Show test subscription")) {
+		auto newMessage = AddChatMessage(MessageType::Subscription);
+		newMessage.m_text = "subscribed!";
+		newMessage.m_username = "Miss";
+		newMessage.m_color = vec4(1, 0.2f, 0.6f, 1);
 	}
 }
 
