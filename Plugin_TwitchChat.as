@@ -28,6 +28,12 @@ float Setting_ChatPosY = 0.3f;
 [Setting name="Flip message order"]
 bool Setting_ChatFlipMessageOrder = false;
 
+[Setting name="Messages disappear after a given time"]
+bool Setting_MessageTimeToLive = true;
+
+[Setting name="Maximum number of messages"]
+int Setting_MessageCountLimit = 20;
+
 [Setting name="Message time"]
 int Setting_ChatMessageTime = 10000;
 
@@ -107,6 +113,11 @@ ChatMessage@ AddChatMessage(MessageType type)
 	}
 
 	g_chatMessages.InsertLast(newMessage);
+
+	while (int(g_chatMessages.Length) > Setting_MessageCountLimit) {
+		g_chatMessages.RemoveAt(0);
+	}
+
 	return newMessage;
 }
 
@@ -250,10 +261,12 @@ void Main()
 	Twitch::Login(Setting_TwitchToken, Setting_TwitchNickname, Setting_TwitchChannel);
 
 	while (true) {
-		for (int i = int(g_chatMessages.Length) - 1; i >= 0; i--) {
-			auto msg = g_chatMessages[i];
-			if (msg.TimeLeft <= 0) {
-				g_chatMessages.RemoveAt(i);
+		if (Setting_MessageTimeToLive) {
+			for (int i = int(g_chatMessages.Length) - 1; i >= 0; i--) {
+				auto msg = g_chatMessages[i];
+				if (msg.TimeLeft <= 0) {
+					g_chatMessages.RemoveAt(i);
+				}
 			}
 		}
 
@@ -291,7 +304,7 @@ void Render()
 
 		Draw::FillRect(vec4(x, y, width, textSizeMessage.y + boxPadding * 2), vec4(0, 0, 0, 0.9f), 4.0f);
 
-		if (Setting_ChatOverlayMessageTimer) {
+		if (Setting_MessageTimeToLive && Setting_ChatOverlayMessageTimer) {
 			vec4 fillColor = msg.m_color;
 			fillColor.w = 0.3f;
 			Draw::FillRect(vec4(
