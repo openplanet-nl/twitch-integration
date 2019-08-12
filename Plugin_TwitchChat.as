@@ -4,7 +4,7 @@
 
 #include "TwitchChat.as"
 
-[Setting category="Twitch" name="Twitch OAuth Token" password]
+[Setting category="Twitch" name="Twitch OAuth Token" password description="You can generate an OAuth token from: https://twitchapps.com/tmi/"]
 string Setting_TwitchToken;
 
 [Setting category="Twitch" name="Twitch Nickname" description="Lowercase username of the account to connect."]
