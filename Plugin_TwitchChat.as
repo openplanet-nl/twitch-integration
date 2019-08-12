@@ -181,6 +181,9 @@ class ChatCallbacks : Twitch::ICallbacks
 
 		string color;
 		msg.m_tags.Get("color", color);
+		if (color == "") {
+			color = "#5F9EA0";
+		}
 		newMessage.m_color = Text::ParseHexColor(color);
 
 		string valueBits;
